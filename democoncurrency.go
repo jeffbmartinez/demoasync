@@ -33,16 +33,16 @@ func main() {
 }
 
 func demo1() {
-	ch := make(chan string)
+	messages := make(chan string)
 
 	for _, url := range urls {
 		go func(url string) {
-			ch <- httpGetCheck(url)
+			messages <- httpGetCheck(url)
 		}(url)
 	}
 
 	for i := 0; i < len(urls); i++ {
-		fmt.Println(<-ch)
+		fmt.Println(<-messages)
 	}
 
 	fmt.Println("Done!")
@@ -58,11 +58,11 @@ func httpGetCheck(url string) string {
 }
 
 func demo2() {
-	ch := make(chan string)
+	messages := make(chan string)
 
 	for _, url := range urls {
 		go func(url string) {
-			ch <- httpGetCheck(url)
+			messages <- httpGetCheck(url)
 		}(url)
 	}
 
@@ -72,7 +72,7 @@ func demo2() {
 	done := false
 	for messagesReceived := 0; messagesReceived < len(urls) && !done; {
 		select {
-		case message := <-ch:
+		case message := <-messages:
 			fmt.Println(message)
 			messagesReceived++
 		case tick := <-secondMarks:
@@ -145,7 +145,7 @@ func randomSpeaker() chan int {
 
 	go func() {
 		for i := 0; i < 1000; i++ {
-			time.Sleep(time.Duration(rand.Intn(2000)) * time.Millisecond)
+			time.Sleep(time.Duration(rand.Intn(1000)) * time.Millisecond)
 			ch <- i
 		}
 	}()
